@@ -9,7 +9,7 @@ class supermarche extends Model
 {
 
     protected $fillable = [
-        "nom", "adresse"
+        "nom", "adresse", "image_path"
     ];
     
     public static function managedBy($id) {

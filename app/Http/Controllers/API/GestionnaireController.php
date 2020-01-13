@@ -8,6 +8,7 @@ use App\Models\GestionnaireGereSupermarche as GGS;
 use App\User;
 use Validator;
 use Hash;
+use Storage;
 
 class GestionnaireController extends BaseController
 {
@@ -48,7 +49,7 @@ class GestionnaireController extends BaseController
             "name" => "required|string",
             "email" => "required|email|unique:users",
             "password" => "required|string",
-            "avatar" => "required|file|mimes:jpeg,jpg,png,gif|max:50000"
+            "avatar_path" => "required|string",
         ]);
 
         if($sanitize->fails()) {
@@ -56,14 +57,12 @@ class GestionnaireController extends BaseController
             return $this->sendError("Failed to sanitize",405,$errors->all());
         }
 
+        if(!Storage::disk("public")->exists($request->avatar_path)) {
+            return $this->sendError("gestionnaire.avatar_url.not_found",403);
+        }
+
         $input = $request->all();
         $input["password"] = Hash::make($input["password"]);
-        if($request->hasFile("avatar")) {
-            $path = $request->file("avatar")->store("public/UserProfiles");
-            unset($input["avatar"]);
-            $input["avatar_path"] = substr($path,7);
-        }
-        
         $gest = User::create($input);
         $gest->assignRole("Gestionnaire");
 
@@ -111,7 +110,7 @@ class GestionnaireController extends BaseController
             "name" => "string",
             "email" => "email",
             "password" => "string",
-            "avatar" => "file|mimes:jpeg,jpg,png,gif|max:50000"
+            "avatar_path" => "string"
         ]);
 
         if($sanitize->fails()) {
@@ -137,9 +136,13 @@ class GestionnaireController extends BaseController
             $upd->password = Hash::make($request->password);
         }
 
-        if($request->hasFile("avatar")) {
-            $path = $request->file("avatar")->store("public/UserProfiles");
-            $upd->avatar_path = substr($path,7);
+        if($request->has("avatar_path")) {
+            if(Storage::disk("public")->exists($request->avatar_path)) {
+                $upd->avatar_path = $request->avatar_path;
+            }
+            else {
+                return $this->sendError("gestionnaire.avatar.not_found",404);
+            }
         }
 
         $upd->save();

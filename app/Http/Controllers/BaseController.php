@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller as Controller;
 use App\User;
+use Validator;
 
 class BaseController extends Controller
 {
@@ -67,4 +68,30 @@ class BaseController extends Controller
          }
      }
 
+     /**
+     * Upload an Img
+     *
+     * @param \Illuminate\Http\Response
+     * @return \Illuminate\Http\Response
+     */
+    public function uploadImg(Request $request)
+    {
+        $user = $this->getAuthenticatedUser();
+        
+        if(!$user) {
+            return $this->sendError("user.unauthorized",403);
+        }
+        
+        $sanitize = Validator::make($request->all(),[
+            "avatar" => "required|file|mimes:jpeg,jpg,png,gif|max:50000"
+        ]);
+
+        if($sanitize->fails()) {
+            $errors = $sanitize->errors();
+            return $this->sendError("Failed to sanitize",405,$errors->all());
+        }
+
+        $path = $request->file("avatar")->store("public/images");
+        return $this->sendResponse(substr($path,7),"Uploaded Img Avatar successfully");
+    }
 }

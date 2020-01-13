@@ -6,6 +6,7 @@ use App\Models\Supermarche;
 use Illuminate\Http\Request;
 use App\Http\Controllers\BaseController;
 use Validator;
+use Storage;
 
 class SupermarcheController extends BaseController
 {
@@ -44,12 +45,17 @@ class SupermarcheController extends BaseController
         
         $sanitize = Validator::make($request->all(),[
             "nom" => "required|string",
-            "adresse" => "required|string"
+            "adresse" => "required|string",
+            "image_path" => "required|string",
         ]);
 
         if($sanitize->fails()) {
             $errors = $sanitize->errors();
             return $this->sendError("Failed to sanitize",405,$errors->all());
+        }
+
+        if(!Storage::disk("public")->exists($request->image_path)) {
+            return $this->sendError("supermarche.avatar_url.not_found",403);
         }
 
         $input = $request->all();
@@ -97,7 +103,8 @@ class SupermarcheController extends BaseController
 
         $sanitize = Validator::make($request->all(),[
             "nom" => "required|string",
-            "adresse" => "required|string"
+            "adresse" => "required|string",
+            "image_path" => "required|string",
         ]);
 
         if($sanitize->fails()) {
@@ -110,8 +117,13 @@ class SupermarcheController extends BaseController
             return $this->sendError("supermarche.not_found",404);
         }
 
+        if(!Storage::disk("public")->exists($request->image_path)) {
+            return $this->sendError("supermarche.avatar_url.not_found",403);
+        }
+
         $supermarche->nom = $request->nom;
         $supermarche->adresse = $request->adresse;
+        $supermarche->image_path = $request->image_path;
         $supermarche->save();
        
         return $this->sendResponse(true,"Updated supermarche successfully");

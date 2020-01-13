@@ -59,5 +59,6 @@ Route::middleware('auth:api')->group( function () {
 
 
     Route::get("/getAuthenticatedUser","API\AuthAPIController@getAuthUser");
+    Route::post("/UploadImg","BaseController@uploadImg");
 });
 ?>
