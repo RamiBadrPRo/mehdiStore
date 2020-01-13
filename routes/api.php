@@ -48,7 +48,9 @@ Route::middleware('auth:api')->group( function () {
 
     Route::post("/Commande","API\CommandeController@store");
     Route::get("/Commande","API\CommandeController@index");
-    Route::get("/Commande/{id}","CommandeController@show");
+    Route::get("/Commande/{id}","API\CommandeController@show");
+    Route::post("/Commande/ValidateReceived/{id}","API\CommandeController@validateReception");
+    Route::post("/Commande/Eval/{id}","API\CommandeController@evalCommande");
 
     Route::get("/getAuthenticatedUser","API\AuthAPIController@getAuthUser");
 });

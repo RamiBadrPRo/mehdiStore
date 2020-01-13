@@ -124,5 +124,50 @@ class CommandeController extends BaseController
         }
     }
 
-    
+    public function validateReception(Request $request,$id) {
+        $user = $this->getAuthenticatedUser();
+
+        $cmd = Commande::find($id);
+
+        if(!$cmd) {
+            return $this->sendError("commande.not_found",404);
+        }
+
+        if(!$user || !$user->can("validate reception commande") || $cmd->user_id != $user->id) {
+            return $this->sendError("user.unauthorized",403);
+        }
+
+        $cmd->received = true;
+        $cmd->save();
+
+        return $this->sendResponse($cmd, "Validated successfully");
+    }
+
+    public function evalCommande(Request $request,$id) {
+        $user = $this->getAuthenticatedUser();
+
+        $cmd = Commande::find($id);
+
+        if(!$cmd) {
+            return $this->sendError("commande.not_found",404);
+        }
+        
+        if(!$user || !$user->can("validate reception commande") || $cmd->user_id != $user->id) {
+            return $this->sendError("user.unauthorized",403);
+        }
+
+        $sanitize = Validator::make($request->all(),[
+            "evaluation" => "required|numeric|min:0|max:5"
+        ]);
+
+        if($sanitize->fails()) {
+            $errors = $sanitize->errors();
+            return $this->sendError("Failed to sanitize",405,$errors->all());
+        }
+        
+        $cmd->evaluation = $request->evaluation;
+        $cmd->save();
+
+        return $this->sendResponse($cmd, "Validated successfully");
+    }
 }
