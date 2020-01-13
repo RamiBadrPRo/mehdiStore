@@ -105,42 +105,24 @@ class CommandeController extends BaseController
      * @param  \App\commande  $commande
      * @return \Illuminate\Http\Response
      */
-    public function show(commande $commande)
+    public function show($id)
     {
-        //
+        $user = $this->getAuthenticatedUser();
+        
+        if(!$user) {
+            return $this->sendError("user.unauthorized", 403);
+        }
+        else {
+            if($user->hasRole("user") || $user->hasRole("administrator")) {
+                $cmds = Commande::with("cmh","cmh.produit")->where("id",$id)->get();
+    
+                return $this->sendResponse($cmds, "Fetched Commandes successfully");
+            }
+            else {
+                return $this->sendError("user.unauthorized",403);
+            }
+        }
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\commande  $commande
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(commande $commande)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\commande  $commande
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, commande $commande)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\commande  $commande
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(commande $commande)
-    {
-        //
-    }
+    
 }
