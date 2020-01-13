@@ -52,6 +52,12 @@ Route::middleware('auth:api')->group( function () {
     Route::post("/Commande/ValidateReceived/{id}","API\CommandeController@validateReception");
     Route::post("/Commande/Eval/{id}","API\CommandeController@evalCommande");
 
+    Route::get("/Delivery","API\DeliveryController@index");
+    Route::post("/Delivery","API\DeliveryController@store");
+    Route::get("/Delivery/{id}","API\DeliveryController@show");
+    Route::post("/Delivery/ValidateDelivery/{id}","API\DeliveryController@validateDelivered");
+
+
     Route::get("/getAuthenticatedUser","API\AuthAPIController@getAuthUser");
 });
 ?>

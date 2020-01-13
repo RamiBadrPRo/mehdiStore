@@ -46,6 +46,11 @@ class DatabaseSeeder extends Seeder
         Permission::create(['name' => 'delete produit']);
         Permission::create(['name' => 'set promotion']);
 
+        Permission::create(['name' => 'add delivery']);
+        Permission::create(['name' => 'edit delivery']);
+        Permission::create(['name' => 'view delivery']);
+        Permission::create(['name' => 'delete delivery']);
+
         Permission::create(['name' => 'add commande']);
         Permission::create(['name' => 'validate reception commande']);
         Permission::create(['name' => 'evaluate commande']);
@@ -53,6 +58,7 @@ class DatabaseSeeder extends Seeder
         Permission::create(['name' => 'edit status']);
         Permission::create(['name' => 'view assigned commandes']);
         Permission::create(['name' => 'validate delivery commande']);
+    
         // this can be done as separate statements
         $role = Role::create(['name' => 'administrator']);
         $role->givePermissionTo(Permission::all());

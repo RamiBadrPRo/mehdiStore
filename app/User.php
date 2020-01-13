@@ -9,6 +9,7 @@ use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
 use App\Models\Produit;
 use App\Models\GestionnaireGereSupermarche as GGS;
+use App\Models\LivreurDisponible as LD;
 
 class User extends Authenticatable
 {
@@ -56,5 +57,12 @@ class User extends Authenticatable
         if(!$g) return null;
 
         return $g->supermarche_id;
+    }
+
+    public function disponible() {
+        $l = LD::where("user_id",$this->id)->first();
+        if(!$l) return null;
+
+        return $l->disponible;
     }
 }
